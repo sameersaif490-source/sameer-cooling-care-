@@ -23,6 +23,44 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Optimize embedded gallery images
+        run: |
+          python3 - <<'PY'
+          import base64
+          import hashlib
+          import re
+          from pathlib import Path
+
+          path = Path("index.html")
+          html = path.read_text(encoding="utf-8")
+          out = Path("images")
+          out.mkdir(exist_ok=True)
+          seen = {}
+          counter = 0
+
+          pattern = re.compile(r'data:image/(jpeg|jpg|png|webp);base64,([A-Za-z0-9+/=]+)')
+
+          def replace(match):
+              nonlocal counter
+              ext, encoded = match.groups()
+              raw = base64.b64decode(encoded)
+              digest = hashlib.sha256(raw).hexdigest()[:16]
+              if digest not in seen:
+                  counter += 1
+                  suffix = "jpg" if ext in ("jpeg", "jpg") else ext
+                  filename = f"gallery-{counter}.{suffix}"
+                  (out / filename).write_bytes(raw)
+                  seen[digest] = filename
+              filename = seen[digest]
+              return filename
+
+          html = pattern.sub(replace, html)
+          html = re.sub(r'<img(?![^>]*\\bloading=)([^>]*?)>', r'<img\\1 loading="lazy" decoding="async">', html, flags=re.I)
+          path.write_text(html, encoding="utf-8")
+          print(f"Extracted {len(seen)} unique embedded images; HTML size is now {path.stat().st_size} bytes")
+          PY
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload site
