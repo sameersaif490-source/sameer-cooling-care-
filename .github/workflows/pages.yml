@@ -37,7 +37,6 @@ jobs:
           out = Path("images")
           out.mkdir(exist_ok=True)
           seen = {}
-          counter = [0]
 
           pattern = re.compile(r'data:image/(jpeg|jpg|png|webp);base64,([A-Za-z0-9+/=]+)')
 
@@ -46,9 +45,8 @@ jobs:
               raw = base64.b64decode(encoded)
               digest = hashlib.sha256(raw).hexdigest()[:16]
               if digest not in seen:
-                  counter[0] += 1
                   suffix = "jpg" if ext in ("jpeg", "jpg") else ext
-                  filename = f"gallery-{counter[0]}.{suffix}"
+                  filename = f"gallery-{len(seen)+1}.{suffix}"
                   (out / filename).write_bytes(raw)
                   seen[digest] = filename
               return seen[digest]
@@ -57,6 +55,42 @@ jobs:
           html = re.sub(r'<img(?![^>]*\bloading=)([^>]*?)>', r'<img\1 loading="lazy" decoding="async">', html, flags=re.I)
           path.write_text(html, encoding="utf-8")
           print(f"Extracted {len(seen)} unique embedded images; HTML size is now {path.stat().st_size} bytes")
+          PY
+
+      - name: Apply SEO metadata
+        run: |
+          python3 - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          path = Path("index.html")
+          html = path.read_text(encoding="utf-8")
+          site = "https://sameersaif490-source.github.io/sameer-cooling-care-/"
+          title = "Sameer Cooling Care | AC Repair, Fridge & Washing Machine Service"
+          description = "AC repair and service, AC gas filling, cooling coil replacement, fridge repair and washing machine service in Ghaziabad and nearby areas. Sameer Cooling Care."
+
+          html = re.sub(r'<title>.*?</title>', f'<title>{title}</title>', html, count=1, flags=re.I|re.S)
+          html = re.sub(r'<meta\s+name=["\']description["\'][^>]*>', '', html, flags=re.I)
+          html = re.sub(r'<head>', '<head>\n<meta name="description" content="' + description + '">\n<meta name="robots" content="index,follow,max-image-preview:large">\n<link rel="canonical" href="' + site + '">\n<meta property="og:title" content="' + title + '">\n<meta property="og:description" content="' + description + '">\n<meta property="og:url" content="' + site + '">\n<meta property="og:type" content="website">', html, count=1, flags=re.I)
+
+          schema = {
+              "@context": "https://schema.org",
+              "@type": "LocalBusiness",
+              "name": "Sameer Cooling Care",
+              "url": site,
+              "areaServed": [
+                  {"@type": "City", "name": "Ghaziabad"},
+                  {"@type": "City", "name": "Delhi"},
+                  {"@type": "City", "name": "Noida"}
+              ],
+              "serviceType": [
+                  "AC Repair", "AC Service", "AC Gas Filling", "Cooling Coil Replacement", "Fridge Repair", "Washing Machine Repair"
+              ]
+          }
+          block = '<script type="application/ld+json">' + json.dumps(schema, ensure_ascii=False, separators=(",", ":")) + '</script>'
+          html = re.sub(r'</head>', block + '\n</head>', html, count=1, flags=re.I)
+          path.write_text(html, encoding="utf-8")
           PY
 
       - name: Setup Pages
