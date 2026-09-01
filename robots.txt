@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sameersaif490-source.github.io/sameer-cooling-care-/sitemap.xml
