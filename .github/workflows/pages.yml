@@ -52,11 +52,10 @@ jobs:
                   filename = f"gallery-{counter}.{suffix}"
                   (out / filename).write_bytes(raw)
                   seen[digest] = filename
-              filename = seen[digest]
-              return filename
+              return seen[digest]
 
           html = pattern.sub(replace, html)
-          html = re.sub(r'<img(?![^>]*\\bloading=)([^>]*?)>', r'<img\\1 loading="lazy" decoding="async">', html, flags=re.I)
+          html = re.sub(r'<img(?![^>]*\bloading=)([^>]*?)>', r'<img\1 loading="lazy" decoding="async">', html, flags=re.I)
           path.write_text(html, encoding="utf-8")
           print(f"Extracted {len(seen)} unique embedded images; HTML size is now {path.stat().st_size} bytes")
           PY
