@@ -67,8 +67,8 @@ jobs:
           path = Path("index.html")
           html = path.read_text(encoding="utf-8")
           site = "https://sameersaif490-source.github.io/sameer-cooling-care-/"
-          title = "Sameer Cooling Care | AC Repair, Fridge & Washing Machine Service"
-          description = "AC repair and service, AC gas filling, cooling coil replacement, fridge repair and washing machine service in Ghaziabad and nearby areas. Sameer Cooling Care."
+          title = "Sameer Cooling Care | AC Repair in Delhi | Fridge & Washing Machine Service"
+          description = "AC repair and service in Delhi, AC gas filling, cooling coil replacement, fridge repair and washing machine service. Sameer Cooling Care serves Delhi and nearby areas."
 
           html = re.sub(r'<title>.*?</title>', f'<title>{title}</title>', html, count=1, flags=re.I|re.S)
           html = re.sub(r'<meta\s+name=["\']description["\'][^>]*>', '', html, flags=re.I)
@@ -80,8 +80,8 @@ jobs:
               "name": "Sameer Cooling Care",
               "url": site,
               "areaServed": [
-                  {"@type": "City", "name": "Ghaziabad"},
                   {"@type": "City", "name": "Delhi"},
+                  {"@type": "City", "name": "Ghaziabad"},
                   {"@type": "City", "name": "Noida"}
               ],
               "serviceType": [
@@ -93,7 +93,7 @@ jobs:
           path.write_text(html, encoding="utf-8")
           PY
 
-      - name: Add local SEO service content
+      - name: Add Delhi local SEO service content
         run: |
           python3 - <<'PY'
           import re
@@ -112,36 +112,36 @@ jobs:
           <section class="localSeo" id="local-services">
             <div class="container">
               <div class="heading">
-                <div class="eyebrow">Local Appliance Service</div>
-                <h2>AC Repair, Fridge Repair & Washing Machine Service in Ghaziabad</h2>
-                <p>Sameer Cooling Care provides practical home-appliance repair, service, installation and maintenance for customers in Ghaziabad and nearby areas.</p>
+                <div class="eyebrow">Delhi Local Appliance Service</div>
+                <h2>AC Repair, Fridge Repair & Washing Machine Service in Delhi</h2>
+                <p>Sameer Cooling Care provides home-appliance repair, service, installation and maintenance for customers in Delhi and nearby areas.</p>
               </div>
               <div class="localSeoGrid">
                 <article class="localSeoCard">
-                  <h3>AC Repair in Ghaziabad</h3>
-                  <p>AC repair and servicing for cooling problems, AC gas filling, cooling coil replacement, installation and routine maintenance.</p>
+                  <h3>AC Repair in Delhi</h3>
+                  <p>AC repair and servicing for cooling problems, AC gas filling, cooling coil replacement, installation and routine maintenance in Delhi.</p>
                 </article>
                 <article class="localSeoCard">
-                  <h3>Fridge Repair in Ghaziabad</h3>
-                  <p>Refrigerator repair and service for common cooling and performance problems, with troubleshooting and maintenance support.</p>
+                  <h3>Fridge Repair in Delhi</h3>
+                  <p>Refrigerator repair and service for common cooling and performance problems, with troubleshooting and maintenance support in Delhi.</p>
                 </article>
                 <article class="localSeoCard">
-                  <h3>Washing Machine Repair in Ghaziabad</h3>
-                  <p>Washing machine troubleshooting, repair, installation and maintenance for common everyday appliance issues.</p>
+                  <h3>Washing Machine Repair in Delhi</h3>
+                  <p>Washing machine troubleshooting, repair, installation and maintenance for common everyday appliance issues in Delhi.</p>
                 </article>
               </div>
               <div class="heading" style="margin-bottom:24px">
                 <div class="eyebrow">Frequently Asked</div>
-                <h2 style="font-size:32px">Service Questions</h2>
+                <h2 style="font-size:32px">Delhi Service Questions</h2>
               </div>
               <div class="faqGrid">
-                <article class="faq"><h3>How can I book a service?</h3><p>Call or WhatsApp Sameer Cooling Care and describe the appliance problem to discuss your service requirement.</p></article>
-                <article class="faq"><h3>Which appliances do you service?</h3><p>Services include AC, refrigerator/fridge and washing machine repair, installation and maintenance.</p></article>
-                <article class="faq"><h3>Do you provide AC gas filling?</h3><p>Yes. AC gas filling is available as part of the AC service offering when required after checking the appliance.</p></article>
-                <article class="faq"><h3>Do you replace AC cooling coils?</h3><p>Cooling coil replacement is available for AC units where replacement is the appropriate repair solution.</p></article>
+                <article class="faq"><h3>How can I book a service in Delhi?</h3><p>Call or WhatsApp Sameer Cooling Care and describe the appliance problem to discuss your service requirement.</p></article>
+                <article class="faq"><h3>Which appliances do you service in Delhi?</h3><p>Services include AC, refrigerator/fridge and washing machine repair, installation and maintenance.</p></article>
+                <article class="faq"><h3>Do you provide AC gas filling in Delhi?</h3><p>Yes. AC gas filling is available as part of the AC service offering when required after checking the appliance.</p></article>
+                <article class="faq"><h3>Do you replace AC cooling coils in Delhi?</h3><p>Cooling coil replacement is available for AC units where replacement is the appropriate repair solution.</p></article>
               </div>
               <div class="localCta">
-                <div><strong>Need appliance service in Ghaziabad?</strong><p>Get in touch and tell us what needs attention.</p></div>
+                <div><strong>Need appliance service in Delhi?</strong><p>Get in touch and tell us what needs attention.</p></div>
                 <a class="btn primary" href="tel:9870657543">📞 Call for Service</a>
               </div>
             </div>
@@ -150,23 +150,25 @@ jobs:
 
           if 'id="local-services"' not in html:
               html = re.sub(r'</main>', section + '\n</main>', html, count=1, flags=re.I)
+          else:
+              html = re.sub(r'<section class="localSeo" id="local-services">.*?</section>', section, html, count=1, flags=re.I|re.S)
 
           faq_schema = {
               "@context": "https://schema.org",
               "@type": "FAQPage",
               "mainEntity": [
-                  {"@type":"Question","name":"How can I book a service?","acceptedAnswer":{"@type":"Answer","text":"Call or WhatsApp Sameer Cooling Care and describe the appliance problem to discuss your service requirement."}},
-                  {"@type":"Question","name":"Which appliances do you service?","acceptedAnswer":{"@type":"Answer","text":"Services include AC, refrigerator/fridge and washing machine repair, installation and maintenance."}},
-                  {"@type":"Question","name":"Do you provide AC gas filling?","acceptedAnswer":{"@type":"Answer","text":"Yes. AC gas filling is available as part of the AC service offering when required after checking the appliance."}},
-                  {"@type":"Question","name":"Do you replace AC cooling coils?","acceptedAnswer":{"@type":"Answer","text":"Cooling coil replacement is available for AC units where replacement is the appropriate repair solution."}}
+                  {"@type":"Question","name":"How can I book a service in Delhi?","acceptedAnswer":{"@type":"Answer","text":"Call or WhatsApp Sameer Cooling Care and describe the appliance problem to discuss your service requirement."}},
+                  {"@type":"Question","name":"Which appliances do you service in Delhi?","acceptedAnswer":{"@type":"Answer","text":"Services include AC, refrigerator/fridge and washing machine repair, installation and maintenance."}},
+                  {"@type":"Question","name":"Do you provide AC gas filling in Delhi?","acceptedAnswer":{"@type":"Answer","text":"Yes. AC gas filling is available as part of the AC service offering when required after checking the appliance."}},
+                  {"@type":"Question","name":"Do you replace AC cooling coils in Delhi?","acceptedAnswer":{"@type":"Answer","text":"Cooling coil replacement is available for AC units where replacement is the appropriate repair solution."}}
               ]
           }
           block = '<script type="application/ld+json">' + json.dumps(faq_schema, ensure_ascii=False, separators=(",", ":")) + '</script>'
-          if '"@type":"FAQPage"' not in html:
-              html = re.sub(r'</head>', block + '\n</head>', html, count=1, flags=re.I)
+          html = re.sub(r'<script type="application/ld\+json">\{"@context":"https://schema.org","@type":"FAQPage".*?</script>', '', html, count=1, flags=re.I|re.S)
+          html = re.sub(r'</head>', block + '\n</head>', html, count=1, flags=re.I)
 
           path.write_text(html, encoding="utf-8")
-          print("Local SEO service section and FAQ content added")
+          print("Delhi-primary local SEO service section and FAQ content added")
           PY
 
       - name: Setup Pages
