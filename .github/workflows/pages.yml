@@ -37,19 +37,18 @@ jobs:
           out = Path("images")
           out.mkdir(exist_ok=True)
           seen = {}
-          counter = 0
+          counter = [0]
 
           pattern = re.compile(r'data:image/(jpeg|jpg|png|webp);base64,([A-Za-z0-9+/=]+)')
 
           def replace(match):
-              nonlocal counter
               ext, encoded = match.groups()
               raw = base64.b64decode(encoded)
               digest = hashlib.sha256(raw).hexdigest()[:16]
               if digest not in seen:
-                  counter += 1
+                  counter[0] += 1
                   suffix = "jpg" if ext in ("jpeg", "jpg") else ext
-                  filename = f"gallery-{counter}.{suffix}"
+                  filename = f"gallery-{counter[0]}.{suffix}"
                   (out / filename).write_bytes(raw)
                   seen[digest] = filename
               return seen[digest]
