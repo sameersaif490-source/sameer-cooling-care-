@@ -1,0 +1,38 @@
+name: Add lead conversion tracking
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  add-lead-events:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add generate_lead tracking
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          if 'data-lead-events="G-DG600WVK24"' in s:
+              print('Lead tracking already installed')
+              raise SystemExit(0)
+          old = "if(h.indexOf('tel:')===0)gtag('event','phone_call_click',{event_category:'engagement',event_label:h.replace('tel:','')});else if(h.indexOf('wa.me/')!==-1||h.indexOf('whatsapp')!==-1)gtag('event','whatsapp_click',{event_category:'engagement',event_label:h})"
+          new = "if(h.indexOf('tel:')===0){gtag('event','phone_call_click',{event_category:'engagement',event_label:h.replace('tel:','')});gtag('event','generate_lead',{method:'phone',event_category:'lead',event_label:h.replace('tel:','')})}else if(h.indexOf('wa.me/')!==-1||h.indexOf('whatsapp')!==-1){gtag('event','whatsapp_click',{event_category:'engagement',event_label:h});gtag('event','generate_lead',{method:'whatsapp',event_category:'lead',event_label:'whatsapp'})}"
+          if old not in s:
+              raise SystemExit('Expected tracking code not found; no change made')
+          s = s.replace(old, new).replace('<script data-ga4-installed="G-DG600WVK24">', '<script data-ga4-installed="G-DG600WVK24" data-lead-events="G-DG600WVK24">')
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Add phone and WhatsApp lead events"
+          git push
