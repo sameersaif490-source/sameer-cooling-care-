@@ -1,0 +1,41 @@
+name: Add SEO Canonical
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  canonical:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add canonical URL if missing
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          canonical = '<link rel="canonical" href="https://sameersaif490-source.github.io/sameer-cooling-care-/">'
+          if 'rel="canonical"' not in s:
+              s = s.replace('</title>', '</title>' + canonical, 1)
+              p.write_text(s, encoding='utf-8')
+          else:
+              print('Canonical URL already present')
+
+      - name: Commit SEO fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Add canonical URL for SEO"
+            git push
+          fi
