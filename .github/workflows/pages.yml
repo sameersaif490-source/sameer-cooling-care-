@@ -53,7 +53,7 @@ jobs:
 
           html = pattern.sub(replace, html)
           html = re.sub(r'<img(?![^>]*\bloading=)([^>]*?)>', r'<img\1 loading="lazy" decoding="async">', html, flags=re.I)
-          html = re.sub(r'</style>', '@media(max-width:850px){header nav{display:none!important}} </style>', html, count=1, flags=re.I)
+          html = re.sub(r'</head>', '<style>@media(max-width:850px){header nav{display:none!important}}</style></head>', html, count=1, flags=re.I)
           path.write_text(html, encoding="utf-8")
           print(f"Extracted {len(seen)} unique embedded images; HTML size is now {path.stat().st_size} bytes")
           PY
