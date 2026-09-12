@@ -73,12 +73,18 @@ jobs:
 
           html = re.sub(r'<title>.*?</title>', f'<title>{title}</title>', html, count=1, flags=re.I|re.S)
           html = re.sub(r'<meta\s+name=["\']description["\'][^>]*>', '', html, flags=re.I)
-          html = re.sub(r'<head>', '<head>\n<meta name="description" content="' + description + '">\n<meta name="robots" content="index,follow,max-image-preview:large">\n<link rel="canonical" href="' + site + '">\n<meta property="og:title" content="' + title + '">\n<meta property="og:description" content="' + description + '">\n<meta property="og:url" content="' + site + '">\n<meta property="og:type" content="website">', html, count=1, flags=re.I)
+          html = re.sub(r'<meta\s+name=["\']robots["\'][^>]*>', '', html, flags=re.I)
+          html = re.sub(r'<link\s+rel=["\']canonical["\'][^>]*>', '', html, flags=re.I)
+          html = re.sub(r'<meta\s+property=["\']og:(title|description|url|type)["\'][^>]*>', '', html, flags=re.I)
+          html = re.sub(r'<script\s+type=["\']application/ld\+json["\']>\s*\{.*?"@type"\s*:\s*"LocalBusiness".*?</script>', '', html, count=1, flags=re.I|re.S)
+          head_meta = '\n<meta name="description" content="' + description + '">\n<meta name="robots" content="index,follow,max-image-preview:large">\n<link rel="canonical" href="' + site + '">\n<meta property="og:title" content="' + title + '">\n<meta property="og:description" content="' + description + '">\n<meta property="og:url" content="' + site + '">\n<meta property="og:type" content="website">'
+          html = re.sub(r'<head>', '<head>' + head_meta, html, count=1, flags=re.I)
 
           schema = {
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
               "name": "Sameer Cooling Care",
+              "telephone": "+91-9870657543",
               "url": site,
               "areaServed": [
                   {"@type": "City", "name": "Delhi"},
@@ -87,7 +93,8 @@ jobs:
               ],
               "serviceType": [
                   "AC Repair", "AC Service", "AC Gas Filling", "Cooling Coil Replacement", "Fridge Repair", "Washing Machine Repair"
-              ]
+              ],
+              "description": "AC, fridge and washing machine repair and service."
           }
           block = '<script type="application/ld+json">' + json.dumps(schema, ensure_ascii=False, separators=(",", ":")) + '</script>'
           html = re.sub(r'</head>', block + '\n</head>', html, count=1, flags=re.I)
